@@ -20,17 +20,15 @@ def predict():
         temperature = float(request.form["value1"])      # temp_max
         humidity = float(request.form["value2"])         # used to estimate precipitation
         wind_speed = float(request.form["value3"])       # wind
-        pressure = float(request.form["value4"])         # used to estimate temp_min
+        pressure = float(request.form["value4"])         # estimate for temp_min
+        
+        # ----- Convert inputs to model features -----
 
-        # --------------------------
-        # Convert UI inputs → model features
-        # --------------------------
-
-        # Feature 1: date as ordinal
+        # Feature 1: today's date as ordinal
         today = dt.datetime.now()
         date_ordinal = today.toordinal()
 
-        # Feature 2: precipitation approximation
+        # Feature 2: precipitation approx
         precipitation = humidity / 100.0
 
         # Feature 3: temp_max
@@ -48,13 +46,14 @@ def predict():
         # Predict encoded class
         pred_encoded = model.predict(features)[0]
 
-        # Decode to actual class
+        # Decode to actual class (sun, rain, fog, snow, drizzle…)
         prediction = le.inverse_transform([pred_encoded])[0]
 
         return render_template("index.html", result=prediction)
 
     except Exception as e:
         return render_template("index.html", result=f"Error: {str(e)}")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
