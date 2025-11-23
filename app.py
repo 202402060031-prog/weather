@@ -31,7 +31,7 @@ def predict():
         date_ordinal = today.toordinal()
 
         # Model Feature 2: precipitation (approx from humidity)
-        precipitation = humidity / 100.0
+   precipitation = humidity / 100.0
 
         # Model Feature 3: temp_max (direct from UI)
         temp_max = temperature
@@ -56,5 +56,5 @@ def predict():
     except Exception as e:
         return render_template("index.html", result=f"Error: {str(e)}")
 
-if _name_ == "_main_":
+if name == "main":
     app.run(debug=True)
