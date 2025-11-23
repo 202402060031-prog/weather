@@ -3,9 +3,9 @@ import numpy as np
 import pickle
 import datetime as dt
 
-app = Flask(_name_)
+app = Flask(__name__)
 
-# Load model + label encoder
+# Load model and label encoder
 model = pickle.load(open("model.pkl", "rb"))
 le = pickle.load(open("label_encoder.pkl", "rb"))
 
@@ -26,29 +26,29 @@ def predict():
         # Convert UI inputs → model features
         # --------------------------
 
-        # Model Feature 1: date_ordinal → use today's date
+        # Feature 1: date as ordinal
         today = dt.datetime.now()
         date_ordinal = today.toordinal()
 
-        # Model Feature 2: precipitation (approx from humidity)
-   precipitation = humidity / 100.0
+        # Feature 2: precipitation approximation
+        precipitation = humidity / 100.0
 
-        # Model Feature 3: temp_max (direct from UI)
+        # Feature 3: temp_max
         temp_max = temperature
 
-        # Model Feature 4: temp_min (estimate: temp_max - 5)
+        # Feature 4: temp_min (estimate)
         temp_min = temperature - 5
 
-        # Model Feature 5: wind (direct from UI)
+        # Feature 5: wind
         wind = wind_speed
 
-        # Final feature array
+        # Prepare input array
         features = np.array([[date_ordinal, precipitation, temp_max, temp_min, wind]])
 
         # Predict encoded class
         pred_encoded = model.predict(features)[0]
 
-        # Decode to label (sun, rain, drizzle, fog, snow)
+        # Decode to actual class
         prediction = le.inverse_transform([pred_encoded])[0]
 
         return render_template("index.html", result=prediction)
@@ -56,5 +56,5 @@ def predict():
     except Exception as e:
         return render_template("index.html", result=f"Error: {str(e)}")
 
-if name == "main":
+if __name__ == "__main__":
     app.run(debug=True)
